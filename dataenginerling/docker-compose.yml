@@ -1,0 +1,68 @@
+version: "3.4"
+
+# 이미지와 네트워크 정보에 대한 base service를 지정
+x-datanode_base: &datanode_base
+  image: spark-hadoop-datanode:3.3.6
+  networks:
+    - bridge
+
+services:
+  namenode:
+    image: spark-hadoop-namenode:3.3.6
+    container_name: namenode
+    hostname: namenode
+    ports:
+      - 9870:9870
+      - 9000:9000
+      - 8080:8080
+      - 7077:7077
+    volumes:
+      - namenode:/opt/hadoop/dfs/name
+      - /tmp:/tmp
+    networks:
+      - bridge
+
+  datanode01:
+    <<: *datanode_base
+    container_name: datanode01
+    hostname: datanode01
+    ports:
+      - 8081:8081
+    environment:
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1024m
+    volumes:
+      - datanode01:/opt/hadoop/dfs/data
+  
+  datanode02:
+    <<: *datanode_base
+    container_name: datanode02
+    hostname: datanode02
+    ports:
+      - 8082:8081
+    environment:
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1024m
+    volumes:
+      - datanode02:/opt/hadoop/dfs/data
+
+  datanode03:
+    <<: *datanode_base
+    container_name: datanode03
+    hostname: datanode03
+    ports:
+      - 8083:8081
+    environment:
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1024m
+    volumes:
+      - datanode03:/opt/hadoop/dfs/data
+
+volumes:
+  namenode:
+  datanode01:
+  datanode02:
+  datanode03:
+
+networks:
+  bridge:
